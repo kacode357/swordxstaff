@@ -1,0 +1,12 @@
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+        },
+        "CrashSight": {
+            "LogLevel": {
+                "Default": "Error",
+            },
+        }
+    }
+}

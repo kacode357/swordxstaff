@@ -1,0 +1,26 @@
+# Large binaries & APK packages (over GitHub 100MB limit)
+*.apk
+*.xapk
+*.idsig
+*.so
+*.dat
+*.unity3d
+*.dex
+
+# Modding tool outputs & large cache directories
+TOOL/original/
+TOOL/dist/
+TOOL/source/
+TOOL/smali_classes3/
+TOOL/*.dex
+TOOL/client/bin/
+TOOL/client/dex/
+game_assets/il2cpp/
+game_assets/metadata/
+
+# OS & Environment
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/
+*.pyc
