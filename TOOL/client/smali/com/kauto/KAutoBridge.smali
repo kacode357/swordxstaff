@@ -6,6 +6,14 @@
 # static fields
 .field private static final TAG:Ljava/lang/String; = "KAutoBridge"
 
+.field public static playerName:Ljava/lang/String; = "Adventurer"
+
+.field public static playerLevel:Ljava/lang/String; = "Lv. 1"
+
+.field public static playerPower:Ljava/lang/String; = "--"
+
+.field public static playerServer:Ljava/lang/String; = "Global S1"
+
 
 # instance fields
 .field private final activity:Landroid/app/Activity;
@@ -14,39 +22,301 @@
 
 
 # direct methods
+.method static constructor <clinit>()V
+    .registers 3
+
+    :try_start_0
+    const-string v0, "kauto_speed"
+
+    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+
+    const-string v1, "KAutoBridge"
+
+    const-string v2, "libkauto_speed.so loaded successfully in clinit"
+
+    invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    :catchall_0
+    return-void
+.end method
+
 .method public constructor <init>(Landroid/app/Activity;Lcom/kauto/KAutoMenu;)V
     .registers 3
 
-    .line 13
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 14
     iput-object p1, p0, Lcom/kauto/KAutoBridge;->activity:Landroid/app/Activity;
 
-    .line 15
     iput-object p2, p0, Lcom/kauto/KAutoBridge;->menu:Lcom/kauto/KAutoMenu;
 
-    .line 16
     return-void
 .end method
 
 .method static synthetic access$000(Lcom/kauto/KAutoBridge;)Lcom/kauto/KAutoMenu;
     .registers 1
 
-    .line 8
     iget-object p0, p0, Lcom/kauto/KAutoBridge;->menu:Lcom/kauto/KAutoMenu;
 
     return-object p0
 .end method
 
+.method public static native nativeSetSpeed(F)V
+.end method
 
-# virtual methods
+.method public static native nativeIsSpeedReady()Z
+.end method
+
+.method public static onGameReport(Ljava/lang/String;Ljava/lang/String;)V
+    .registers 6
+
+    if-nez p1, :cond_exit
+    return-void
+
+    :cond_exit
+    :try_start_0
+    new-instance v0, Lorg/json/JSONObject;
+    invoke-direct {v0, p1}, Lorg/json/JSONObject;-><init>(Ljava/lang/String;)V
+
+    const-string v1, "roleName"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_name_1
+    const-string v1, "roleName"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerName:Ljava/lang/String;
+    goto :check_level
+
+    :cond_name_1
+    const-string v1, "role_name"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_name_2
+    const-string v1, "role_name"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerName:Ljava/lang/String;
+    goto :check_level
+
+    :cond_name_2
+    const-string v1, "name"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_check_level
+    const-string v1, "name"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerName:Ljava/lang/String;
+
+    :cond_check_level
+    :check_level
+    const-string v1, "roleLevel"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_lvl_1
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Lv. "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v2, "roleLevel"
+    invoke-virtual {v0, v2}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerLevel:Ljava/lang/String;
+    goto :check_power
+
+    :cond_lvl_1
+    const-string v1, "PlayerLevel"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_lvl_2
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Lv. "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v2, "PlayerLevel"
+    invoke-virtual {v0, v2}, Lorg/json/JSONObject;->get(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v2
+    invoke-static {v2}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerLevel:Ljava/lang/String;
+    goto :check_power
+
+    :cond_lvl_2
+    const-string v1, "role_level"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_check_power
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Lv. "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v2, "role_level"
+    invoke-virtual {v0, v2}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerLevel:Ljava/lang/String;
+
+    :cond_check_power
+    :check_power
+    const-string v1, "CombatRating"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_pwr_1
+    const-string v1, "CombatRating"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->getJSONObject(Ljava/lang/String;)Lorg/json/JSONObject;
+    move-result-object v1
+    const-string v2, "TotalPower"
+    invoke-virtual {v1, v2}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v2
+    if-eqz v2, :cond_check_server
+    const-string v2, "TotalPower"
+    invoke-virtual {v1, v2}, Lorg/json/JSONObject;->get(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v1
+    invoke-static {v1}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerPower:Ljava/lang/String;
+    goto :check_server
+
+    :cond_pwr_1
+    const-string v1, "TotalPower"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_pwr_2
+    const-string v1, "TotalPower"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->get(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v1
+    invoke-static {v1}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerPower:Ljava/lang/String;
+    goto :check_server
+
+    :cond_pwr_2
+    const-string v1, "power"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_check_server
+    const-string v1, "power"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerPower:Ljava/lang/String;
+
+    :cond_check_server
+    :check_server
+    const-string v1, "serverName"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_srv_1
+    const-string v1, "serverName"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerServer:Ljava/lang/String;
+    goto :done
+
+    :cond_srv_1
+    const-string v1, "server_name"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :cond_srv_2
+    const-string v1, "server_name"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerServer:Ljava/lang/String;
+    goto :done
+
+    :cond_srv_2
+    const-string v1, "ServerId"
+    invoke-virtual {v0, v1}, Lorg/json/JSONObject;->has(Ljava/lang/String;)Z
+    move-result v1
+    if-eqz v1, :done
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "Server "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v2, "ServerId"
+    invoke-virtual {v0, v2}, Lorg/json/JSONObject;->get(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v2
+    invoke-static {v2}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v1
+    sput-object v1, Lcom/kauto/KAutoBridge;->playerServer:Ljava/lang/String;
+
+    :done
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    :catchall_0
+    return-void
+.end method
+
+.method public getPlayerInfo()Ljava/lang/String;
+    .registers 3
+    .annotation runtime Landroid/webkit/JavascriptInterface;
+    .end annotation
+
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v1, "{\"name\":\""
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    sget-object v1, Lcom/kauto/KAutoBridge;->playerName:Ljava/lang/String;
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v1, "\",\"level\":\""
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    sget-object v1, Lcom/kauto/KAutoBridge;->playerLevel:Ljava/lang/String;
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v1, "\",\"power\":\""
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    sget-object v1, Lcom/kauto/KAutoBridge;->playerPower:Ljava/lang/String;
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v1, "\",\"server\":\""
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    sget-object v1, Lcom/kauto/KAutoBridge;->playerServer:Ljava/lang/String;
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    const-string v1, "\"}"
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
 .method public close()V
     .registers 3
     .annotation runtime Landroid/webkit/JavascriptInterface;
     .end annotation
 
-    .line 66
     iget-object v0, p0, Lcom/kauto/KAutoBridge;->activity:Landroid/app/Activity;
 
     new-instance v1, Lcom/kauto/KAutoBridge$4;
@@ -55,7 +325,6 @@
 
     invoke-virtual {v0, v1}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
 
-    .line 74
     return-void
 .end method
 
@@ -64,7 +333,6 @@
     .annotation runtime Landroid/webkit/JavascriptInterface;
     .end annotation
 
-    .line 54
     iget-object v0, p0, Lcom/kauto/KAutoBridge;->activity:Landroid/app/Activity;
 
     new-instance v1, Lcom/kauto/KAutoBridge$3;
@@ -73,16 +341,14 @@
 
     invoke-virtual {v0, v1}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
 
-    .line 62
     return-void
 .end method
 
 .method public setSpeed(F)V
-    .registers 4
+    .registers 6
     .annotation runtime Landroid/webkit/JavascriptInterface;
     .end annotation
 
-    .line 20
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -91,11 +357,7 @@
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v0
-
     invoke-virtual {v0, p1}, Ljava/lang/StringBuilder;->append(F)Ljava/lang/StringBuilder;
-
-    move-result-object v0
 
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
@@ -105,7 +367,12 @@
 
     invoke-static {v1, v0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 21
+    :try_start_0
+    invoke-static {p1}, Lcom/kauto/KAutoBridge;->nativeSetSpeed(F)V
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    :catchall_0
     iget-object v0, p0, Lcom/kauto/KAutoBridge;->activity:Landroid/app/Activity;
 
     new-instance v1, Lcom/kauto/KAutoBridge$1;
@@ -114,57 +381,5 @@
 
     invoke-virtual {v0, v1}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
 
-    .line 34
-    return-void
-.end method
-
-.method public toggleFeature(Ljava/lang/String;Z)V
-    .registers 5
-    .annotation runtime Landroid/webkit/JavascriptInterface;
-    .end annotation
-
-    .line 38
-    new-instance v0, Ljava/lang/StringBuilder;
-
-    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v1, "Toggle feature: "
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    const-string v1, " = "
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0, p2}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
-
-    move-result-object v0
-
-    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v0
-
-    const-string v1, "KAutoBridge"
-
-    invoke-static {v1, v0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-
-    .line 39
-    iget-object v0, p0, Lcom/kauto/KAutoBridge;->activity:Landroid/app/Activity;
-
-    new-instance v1, Lcom/kauto/KAutoBridge$2;
-
-    invoke-direct {v1, p0, p1, p2}, Lcom/kauto/KAutoBridge$2;-><init>(Lcom/kauto/KAutoBridge;Ljava/lang/String;Z)V
-
-    invoke-virtual {v0, v1}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
-
-    .line 50
     return-void
 .end method

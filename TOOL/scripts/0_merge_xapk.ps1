@@ -15,7 +15,7 @@ if ((Test-Path $ORIGINAL_APK) -and (-not $Force)) {
     exit 0
 }
 
-java -jar "$APKEDITOR" m -i "$ORIGINAL_XAPK" -o "$ORIGINAL_APK" -f
+& $JAVA -jar "$APKEDITOR" m -i "$ORIGINAL_XAPK" -o "$ORIGINAL_APK" -f
 
 if ($LASTEXITCODE -eq 0 -and (Test-Path $ORIGINAL_APK)) {
     Write-Host ">>> [0/3] Merge XAPK THANH CONG: $ORIGINAL_APK" -ForegroundColor Green

@@ -12,11 +12,17 @@ TOOL/original/
 TOOL/dist/
 TOOL/source/
 TOOL/smali_classes3/
+TOOL/smali_us_classes2/
+TOOL/tools/
 TOOL/*.dex
 TOOL/client/bin/
 TOOL/client/dex/
 game_assets/il2cpp/
 game_assets/metadata/
+
+# Screenshots
+screen*.png
+screenshot.png
 
 # OS & Environment
 .DS_Store

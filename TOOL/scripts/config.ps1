@@ -1,18 +1,18 @@
 # Cau hinh chung cho he thong Modding KAuto - Sword x Staff
 $ROOT_DIR = "D:\swordxstaff\TOOL"
-$RESOURCES_DIR = "C:\Users\luuka\Downloads\APK.Tool.GUI.v3.4.0.0\Resources"
-$ANDROID_SDK_BUILD_TOOLS = "C:\Users\luuka\AppData\Local\Android\Sdk\build-tools\36.0.0"
-$ANDROID_JAR = "C:\Users\luuka\AppData\Local\Android\Sdk\platforms\android-34\android.jar"
+$TOOLS_DIR = "$ROOT_DIR\tools"
 
-$APKTOOL = "$RESOURCES_DIR\apktool.jar"
-$APKEDITOR = "$RESOURCES_DIR\APKEditor.jar"
-$APKSIGNER = "$RESOURCES_DIR\apksigner.jar"
-$ZIPALIGN = "$RESOURCES_DIR\zipalign.exe"
-$BAKSMALI = "$RESOURCES_DIR\baksmali.jar"
-$SMALI = "$RESOURCES_DIR\smali.jar"
-$KEY_PK8 = "$RESOURCES_DIR\testkey.pk8"
-$KEY_PEM = "$RESOURCES_DIR\testkey.x509.pem"
-$D8 = "$ANDROID_SDK_BUILD_TOOLS\d8.bat"
+$JAVA = "C:\Program Files\Microsoft\jdk-17.0.21.21-hotspot\bin\java.exe"
+if (-not (Test-Path $JAVA)) {
+    $JAVA = "java"
+}
+
+$APKTOOL = "$TOOLS_DIR\apktool.jar"
+$APKEDITOR = "$TOOLS_DIR\APKEditor.jar"
+$BAKSMALI = "$TOOLS_DIR\baksmali.jar"
+$SMALI = "$TOOLS_DIR\smali.jar"
+$UBER_SIGNER = "$TOOLS_DIR\uber-apk-signer.jar"
+$ADB = "C:\Program Files\Netease\MuMuPlayer\nx_main\adb.exe"
 
 $ORIGINAL_XAPK = "$ROOT_DIR\original\Sword_x_Staff_1.0.0.xapk"
 $ORIGINAL_APK = "$ROOT_DIR\original\Sword_x_Staff_Merged.apk"
@@ -21,3 +21,4 @@ $PATCHES_DIR = "$ROOT_DIR\patches"
 $DIST_DIR = "$ROOT_DIR\dist"
 $OUTPUT_APK = "$DIST_DIR\KAuto_Sword_x_Staff.apk"
 $PATCHED_DEX = "$ROOT_DIR\classes3_patched.dex"
+$SMALI_CLASSES3 = "$ROOT_DIR\smali_classes3"

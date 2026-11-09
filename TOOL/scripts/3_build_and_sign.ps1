@@ -1,4 +1,4 @@
-# 3. Inject patched dex, Zipalign va Ky bang testkey
+# 3. Inject patched dex, Zipalign va Ky APK
 param([switch]$Install)
 
 . "$PSScriptRoot\config.ps1"
@@ -16,7 +16,6 @@ if (-not (Test-Path $PATCHED_DEX)) {
 }
 
 $unsignedApk = Join-Path $DIST_DIR "KAuto_unsigned.apk"
-$alignedApk = Join-Path $DIST_DIR "KAuto_aligned.apk"
 
 # 1. Tao file APK unsigned bang cach sao chep APK goc va thay the classes3.dex
 Write-Host "  -> 1. Injecting classes3_patched.dex vao APK..." -ForegroundColor Yellow
@@ -33,31 +32,33 @@ if ($oldEntry) {
 $null = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $PATCHED_DEX, "classes3.dex")
 $zip.Dispose()
 
-# 2. Zipalign 4-byte
-Write-Host "  -> 2. Zipalign 4-byte (with -p)..." -ForegroundColor Yellow
-& "$ZIPALIGN" -f -p 4 "$unsignedApk" "$alignedApk"
+# 2. Zipalign va Ky APK bang uber-apk-signer (v1, v2, v3)
+Write-Host "  -> 2. Zipalign va Ky chu ky APK (v1, v2, v3)..." -ForegroundColor Yellow
+& $JAVA -jar "$UBER_SIGNER" -a "$unsignedApk" --allowResign -o "$DIST_DIR"
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Loi khi Zipalign APK!"
-    exit 1
+$signedResult = Join-Path $DIST_DIR "KAuto_unsigned-aligned-debugSigned.apk"
+if (Test-Path $signedResult) {
+    Move-Item -Path $signedResult -Destination $OUTPUT_APK -Force
 }
 
-# 3. Sign APK
-Write-Host "  -> 3. Ky chu ky APK (v1 + v2)..." -ForegroundColor Yellow
-java -jar "$APKSIGNER" sign --key "$KEY_PK8" --cert "$KEY_PEM" --v1-signing-enabled true --v2-signing-enabled true --out "$OUTPUT_APK" "$alignedApk"
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Loi khi ky APK!"
+if (Test-Path $OUTPUT_APK) {
+    Write-Host ">>> [3/3] XUAT FILE APK THANH CONG: $OUTPUT_APK" -ForegroundColor Green
+} else {
+    Write-Error ">>> [3/3] Dong goi & ky APK THAT BAI!"
     exit 1
 }
 
 # Don dep file tam
-Remove-Item -Path $unsignedApk, $alignedApk -Force -ErrorAction SilentlyContinue
-
-Write-Host ">>> [3/3] XUAT FILE APK THANH CONG: $OUTPUT_APK" -ForegroundColor Green
+if (Test-Path $unsignedApk) {
+    Remove-Item $unsignedApk -Force -ErrorAction SilentlyContinue
+}
 
 # 4. Cai vao may ao neu co switch -Install
 if ($Install) {
-    Write-Host ">>> Dang cai dat vao thiet bi Android qua ADB..." -ForegroundColor Cyan
-    adb install -r "$OUTPUT_APK"
+    Write-Host ">>> Dang ket noi va cai dat vao MuMu Player qua ADB..." -ForegroundColor Cyan
+    & $ADB connect 127.0.0.1:16384
+    & $ADB -s 127.0.0.1:16384 install -r "$OUTPUT_APK"
+    if ($LASTEXITCODE -ne 0) {
+        & $ADB -s emulator-5554 install -r "$OUTPUT_APK"
+    }
 }
